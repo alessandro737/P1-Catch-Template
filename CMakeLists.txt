@@ -21,9 +21,9 @@ include_directories(src)
 
 add_executable(Main
         src/main.cpp
-        src/AVLTree.cpp
-        src/AVLTree.h
-        )
+        src/TreeNode.cpp
+        src/TreeNode.h
+)
         
 # These tests can use the Catch2-provided main
 add_executable(Tests

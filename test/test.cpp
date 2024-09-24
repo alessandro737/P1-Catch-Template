@@ -2,7 +2,7 @@
 #include <iostream>
 
 // uncomment and replace the following with your own headers
-#include "AVLTree.h"
+#include "TreeNode.h"
 
 using namespace std;
 

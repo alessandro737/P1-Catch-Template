@@ -132,7 +132,7 @@ In test/test.cpp, replace the line at the top that reads `#include <catch2/catch
 
 Also add includes for your header files with a relative path, like so:
 ```cpp
-#include "../src/AVLTree.h"
+#include "../src/TreeNode.h"
 ```
 
 Run this command once from your project directory:
