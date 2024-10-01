@@ -41,6 +41,8 @@ TreeNode *TreeNode::search(TreeNode *root, int key)
 
 TreeNode *TreeNode::search(TreeNode *root, string key)
 {
+    bool found = false;
+
     if (root == nullptr)
     {
         cout << "unsuccessful" << endl;
@@ -50,13 +52,37 @@ TreeNode *TreeNode::search(TreeNode *root, string key)
     if (root->name == key)
     {
         cout << root->gatorID << endl;
+        found = true;
     }
 
-    // keep searching for other instances
-    search(root->left, key);
-    search(root->right, key);
+    // keep searching for other instances pre-order
+    if(root->left != nullptr)
+    {
+        TreeNode* leftSearch = search(root->left, key);
+        if(leftSearch != nullptr)
+        {
+            found = true;
+        }
+    }
 
-    //Todo: add conditional for not found case
+    if (root->right != nullptr)
+    {
+        TreeNode* rightSearch = search(root->right, key);
+        if(rightSearch != nullptr)
+        {
+            found = true;
+        }
+    }
+
+    if(!found)
+    {
+        cout << "unsuccessful" << endl;
+        return nullptr; // if nothing found
+    }
+    else
+    {
+        return root;
+    }
 }
 
 TreeNode* TreeNode::insert(TreeNode *root, int key, string val)
@@ -77,9 +103,60 @@ TreeNode* TreeNode::insert(TreeNode *root, int key, string val)
     else
     { // insertion failed we probably have a duplicate
         cout << "unsuccessful" << endl;
+        return root;
     }
 
-    // todo: balance tree
+    root->height = 1 + max(root->left == nullptr ? 0 : root->left->height,
+                           root->right == nullptr ? 0 : root->right->height);
+
+    int balanceFactor = (root->left ? root->left->height : 0) -
+                        (root->right ? root->right->height : 0);
+
+    if (balanceFactor < -1)
+    { // right heavy?
+        // Check if right subtree is left heavy
+        int rightChildBalance = 0;
+        if (root->right)
+        {
+            rightChildBalance = (root->right->left ? root->right->left->height : 0) -
+                                (root->right->right ? root->right->right->height : 0);
+        }
+
+        if (rightChildBalance > 0)
+        {
+            // Perform right-left rotation
+            root->right = rightRotate(root->right);
+            root = leftRotate(root);
+        }
+        else
+        {
+            // Perform left rotation
+            root = leftRotate(root);
+        }
+    }
+        // Else if tree is left heavy
+    else if (balanceFactor > 1)
+    {
+        // Check if left subtree is right heavy
+        int leftChildBalance = 0;
+        if (root->left)
+        {
+            leftChildBalance = (root->left->left ? root->left->left->height : 0) -
+                               (root->left->right ? root->left->right->height : 0);
+        }
+
+        if (leftChildBalance < 0)
+        {
+            // Perform left-right rotation
+            root->left = leftRotate(root->left);
+            root = rightRotate(root);
+        }
+        else
+        {
+            // Perform right rotation
+            root = rightRotate(root);
+        }
+    }
 
     return root;
 }
@@ -152,4 +229,40 @@ TreeNode * TreeNode::findMax(TreeNode *node) {
     }
     return current;
 }
+
+TreeNode *TreeNode::leftRotate(TreeNode *root) {
+    TreeNode* newRoot = root->right;
+    TreeNode* leftOfNew = newRoot->left;
+
+    newRoot->left = root;
+    root->right = leftOfNew;
+
+    //update heights
+    root->height = 1 + max(root->left ? root->left->height : 0,
+                           root->right ? root->right->height : 0);
+
+    newRoot->height = 1 + max(newRoot->left ? newRoot->left->height : 0,
+                              newRoot->right ? newRoot->right->height : 0);
+
+    return newRoot;
+}
+
+TreeNode *TreeNode::rightRotate(TreeNode *root) {
+    TreeNode* newRoot = root->left;
+    TreeNode* rightOfNew = newRoot->right;
+
+    newRoot->right = root;
+    root->left = rightOfNew;
+
+    //update heights
+    root->height = 1 + max(root->left ? root->left->height : 0,
+                           root->right ? root->right->height : 0);
+
+    newRoot->height = 1 + max(newRoot->left ? newRoot->left->height : 0,
+                              newRoot->right ? newRoot->right->height : 0);
+
+    return newRoot;
+}
+
+
 
