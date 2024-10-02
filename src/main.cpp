@@ -28,7 +28,7 @@ using namespace std;
 
 int main() {
     vector<string> commandLines;
-    ifstream inputFile("../test-io/input-files/5.txt");
+    ifstream inputFile("../test-io/input-files/4.txt");
 
     if(inputFile.is_open())
     {
@@ -127,6 +127,11 @@ int main() {
         else {
             cerr << "unsuccessful" << endl;
         }
+    }
+
+    if(root != nullptr)
+    {
+        delete root;
     }
     return 0;
 }

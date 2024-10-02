@@ -19,12 +19,13 @@ string TreeNode::getName()
 
 TreeNode::~TreeNode()
 {
-    if (left) {
+    if(left)
+    {
         delete left;
         left = nullptr;
     }
-
-    if (right) {
+    if(right)
+    {
         delete right;
         right = nullptr;
     }
@@ -47,10 +48,8 @@ TreeNode *TreeNode::search(TreeNode *root, int key)
     {
         return search(root->left, key);
     }
-    else
-    {
-        return search(root->right, key);
-    }
+
+    return search(root->right, key);
 }
 
 TreeNode *TreeNode::search(TreeNode *root, const string& key, bool& found)
@@ -196,15 +195,24 @@ void TreeNode::printInorder(const TreeNode *root, bool& firstPrinted)
         return;
     }
 
-    printInorder(root->left, firstPrinted);
+    if (root->left != nullptr)
+    {
+        printInorder(root->left, firstPrinted);
+    }
+
     if (firstPrinted)
     {
         cout << ", ";
     }
     cout << root->name;
     firstPrinted = true;
-    printInorder(root->right, firstPrinted);
 
+    if(root->right != nullptr)
+    {
+        printInorder(root->right, firstPrinted);
+    }
+
+    return;
 }
 
 void TreeNode::printPreorder(const TreeNode *root, bool& firstPrinted)
@@ -220,9 +228,18 @@ void TreeNode::printPreorder(const TreeNode *root, bool& firstPrinted)
     }
     cout << root->name;
     firstPrinted = true;
-    printPreorder(root->left, firstPrinted);
-    printPreorder(root->right, firstPrinted);
 
+    if(root->left != nullptr)
+    {
+        printPreorder(root->left, firstPrinted);
+    }
+
+    if(root->right != nullptr)
+    {
+        printPreorder(root->right, firstPrinted);
+    }
+
+    return;
 }
 
 void TreeNode::printPostorder(const TreeNode *root, bool& firstPrinted)
@@ -329,10 +346,9 @@ TreeNode * TreeNode::findNthInOrder(TreeNode *node, int &currCount, int N)
         return nullptr;
     }
 
-    TreeNode* left = findNthInOrder(node->left, currCount, N);
-    if (left != nullptr)
+    if (node->left != nullptr)
     {
-        return left;
+        return findNthInOrder(node->left, currCount, N);
     }
 
     if(currCount == N)
@@ -342,8 +358,13 @@ TreeNode * TreeNode::findNthInOrder(TreeNode *node, int &currCount, int N)
 
     currCount++;
 
-    return findNthInOrder(node->right, currCount, N);
+    if (node->right != nullptr)
+    {
+        return findNthInOrder(node->right, currCount, N);
+    }
 }
+
+
 
 
 
