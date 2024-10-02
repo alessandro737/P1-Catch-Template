@@ -28,7 +28,7 @@ using namespace std;
 
 int main() {
     vector<string> commandLines;
-    ifstream inputFile("../test-io/input-files/1.txt");
+    ifstream inputFile("../test-io/input-files/5.txt");
 
     if(inputFile.is_open())
     {
@@ -63,36 +63,69 @@ int main() {
         if (regex_match(command, matches, insertRegex)) {
             string name = matches[1].str();
             int id = stoi(matches[2].str());
-            cout << "Inserting: " << name << ", ID: " << id << endl;
+            // cout << "Inserting: " << name << ", ID: " << id << endl;
             root = root->insert(root, id, name);
         }
         else if (regex_match(command, matches, removeRegex)) {
             string id = matches[1].str();
-            cout << "Removing ID: " << id << endl;
-            // Call remove function
+            // cout << "Removing ID: " << id << endl;
+            root = root->remove(root, stoi(id));
         }
         else if (regex_match(command, matches, searchIdRegex)) {
             string id = matches[1].str();
-            cout << "Searching by ID: " << id << endl;
-            // Call search by ID function
+            // cout << "Searching by ID: " << id << endl;
+            if(root == nullptr) {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                TreeNode* result = root->search(root, stoi(id));
+                if (result == nullptr)
+                {
+                    cout << "unsuccessful" << endl;
+                }
+            }
         }
         else if (regex_match(command, matches, searchNameRegex)) {
             string name = matches[1].str();
-            cout << "Searching by Name: " << name << endl;
-            // Call search by name function
+            // cout << "Searching by Name: " << name << endl;
+            if(root == nullptr) {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                bool found = false;
+                root->search(root, name, found);
+                if (!found)
+                {
+                    cout << "unsuccessful" << endl;
+                }
+            }
         }
         else if (regex_match(command, matches, removeInorderRegex)) {
             int n = stoi(matches[1].str());
-            cout << "Removing Inorder N: " << n << endl;
-            // Call removeInorder function
+            // cout << "Removing Inorder N: " << n << endl;
+            root = root->removeInorder(root, n);
         }
         else if (regex_match(command, matches, simpleCommandRegex)) {
             string commandType = matches[1].str();
-            cout << "Executing " << commandType << " traversal" << endl;
-            // Call corresponding print traversal function
+            bool firstPrinted = false;
+            // cout << "Executing " << commandType << " traversal" << endl;
+            if (commandType == "Inorder") {
+                root->printInorder(root, firstPrinted);
+                cout << endl;
+            } else if (commandType == "Preorder") {
+                root->printPreorder(root, firstPrinted);
+                cout << endl;
+            } else if (commandType == "Postorder") {
+                root->printPostorder(root, firstPrinted);
+                cout << endl;
+            } else if (commandType == "LevelCount") {
+                root->printLevelCount(root);
+            }
         }
         else {
-            cerr << "Unrecognized command: " << command << endl;
+            cerr << "unsuccessful" << endl;
         }
     }
     return 0;

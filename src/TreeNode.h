@@ -17,19 +17,19 @@ private:
 
 public:
     // constructor & destructor
-    TreeNode(int x, string n) : gatorID(x), height(0), name(n), left(nullptr), right(nullptr){}
+    TreeNode(int x, const string& n) : gatorID(x), height(0), name(n), left(nullptr), right(nullptr){}
+    ~TreeNode();
 
     // functionalities
     TreeNode* search(TreeNode* root, int key);
-    TreeNode* search(TreeNode* root, string val);
-    TreeNode* insert(TreeNode* root, int key, string val);
+    TreeNode* search(TreeNode* root, const string& val, bool& found);
+    TreeNode* insert(TreeNode* root, int key, const string& val);
     TreeNode* remove(TreeNode* root, int key);
-    //Todo:
-    void printInorder(TreeNode* root);
-    void printPreorder(TreeNode* root);
-    void printPostorder(TreeNode* root);
-    void printLevelCount(TreeNode* root);
-    TreeNode* removeInorderN(TreeNode* root, int N);
+    void printInorder(const TreeNode* root, bool& firstPrinted);
+    void printPreorder(const TreeNode* root, bool& firstPrinted);
+    void printPostorder(const TreeNode* root, bool& firstPrinted);
+    void printLevelCount(const TreeNode* root);
+    TreeNode* removeInorder(TreeNode* root, int N);
 
     //helpers
     int getGatorID() const;
@@ -38,6 +38,7 @@ public:
     TreeNode* findMax(TreeNode* node);
     TreeNode* leftRotate(TreeNode* root);
     TreeNode* rightRotate(TreeNode* root);
+    TreeNode* findNthInOrder(TreeNode* node, int& currCount, int N);
 };
 
 
