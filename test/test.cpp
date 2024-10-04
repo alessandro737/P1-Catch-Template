@@ -21,9 +21,10 @@ using namespace std;
 TEST_CASE("Test 2", "[flag]"){
 	// you can also use "sections" to share setup code between tests, for example:
 	int one = 1;
+    int negOne = -1;
 
 	SECTION("num is 2") {
-		int num = one + 1;
+		int num = one - negOne;
 		REQUIRE(num == 2);
 	};
 

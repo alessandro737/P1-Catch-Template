@@ -69,7 +69,16 @@ int main() {
         else if (regex_match(command, matches, removeRegex)) {
             string id = matches[1].str();
             // cout << "Removing ID: " << id << endl;
-            root = root->remove(root, stoi(id));
+            TreeNode* result = root->remove(root, stoi(id));
+            if(result == nullptr)
+            {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                cout << "successful" << endl;
+                root = result;
+            }
         }
         else if (regex_match(command, matches, searchIdRegex)) {
             string id = matches[1].str();
@@ -105,7 +114,16 @@ int main() {
         else if (regex_match(command, matches, removeInorderRegex)) {
             int n = stoi(matches[1].str());
             // cout << "Removing Inorder N: " << n << endl;
-            root = root->removeInorder(root, n);
+            TreeNode* result = root->removeInorder(root, n);
+            if(result == nullptr)
+            {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                cout << "successful" << endl;
+                root = result;
+            }
         }
         else if (regex_match(command, matches, simpleCommandRegex)) {
             string commandType = matches[1].str();
