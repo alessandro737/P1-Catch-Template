@@ -5,6 +5,8 @@
 #ifndef P1_GATORAVL_TREENODE_H
 #define P1_GATORAVL_TREENODE_H
 #include <string>
+#include <vector>
+
 using namespace std;
 
 class TreeNode {
@@ -12,8 +14,8 @@ private:
     int gatorID = 0;
     int height = 0;
     string name;
-    TreeNode *left;
-    TreeNode *right;
+//    TreeNode* left;
+//    TreeNode* right;
 
 public:
     // constructor & destructor
@@ -31,14 +33,17 @@ public:
     void printLevelCount(const TreeNode* root);
     TreeNode* removeInorder(TreeNode* root, int N);
 
-    //helpers
-    int getGatorID() const;
-    string getName();
+    // helpers
     TreeNode* findMin(TreeNode* node);
-    TreeNode* findMax(TreeNode* node);
     TreeNode* leftRotate(TreeNode* root);
     TreeNode* rightRotate(TreeNode* root);
     TreeNode* findNthInOrder(TreeNode* node, int& currCount, int N);
+    int getGatorID();
+
+    // for test.cpp purposes
+    std::vector<int> inorder(TreeNode* root);
+    TreeNode* left;
+    TreeNode* right;
 };
 
 

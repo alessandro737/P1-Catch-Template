@@ -3,28 +3,20 @@
 //
 
 #include "TreeNode.h"
-
 #include <iostream>
 #include <ostream>
-
-int TreeNode::getGatorID() const
-{
-    return gatorID;
-}
-
-string TreeNode::getName()
-{
-    return name;
-}
+#include <vector>
 
 TreeNode::~TreeNode()
 {
-    if (left) {
+    if (left)
+    {
         delete left;
         left = nullptr;
     }
 
-    if (right) {
+    if (right)
+    {
         delete right;
         right = nullptr;
     }
@@ -283,7 +275,7 @@ TreeNode * TreeNode::removeInorder(TreeNode *root, const int N)
         return root;
     }
 
-    if(target != nullptr)
+    if(target != nullptr) //safeguard -- you never know
     {
         root = remove(root, target->gatorID);
     }
@@ -296,16 +288,6 @@ TreeNode* TreeNode::findMin(TreeNode* node)
     while (current && current->left != nullptr)
     {
         current = current->left;
-    }
-    return current;
-}
-
-TreeNode * TreeNode::findMax(TreeNode *node)
-{
-    TreeNode* current = node;
-    while (current && current->right != nullptr)
-    {
-        current = current->right;
     }
     return current;
 }
@@ -373,6 +355,32 @@ TreeNode * TreeNode::findNthInOrder(TreeNode *node, int &currCount, int N)
     }
 
     return nullptr;
+}
+
+int TreeNode::getGatorID()
+{
+    return this->gatorID;
+}
+
+std::vector<int> TreeNode::inorder(TreeNode *root)
+{
+    std::vector<int> result;
+    if (root == nullptr)
+    {
+        return result;
+    }
+    // left
+    std::vector<int> leftSubtree = inorder(root->left);
+    result.insert(result.end(), leftSubtree.begin(), leftSubtree.end());
+
+    // root
+    result.push_back(root->gatorID);
+
+    // right
+    std::vector<int> rightSubtree = inorder(root->right);
+    result.insert(result.end(), rightSubtree.begin(), rightSubtree.end());
+
+    return result;
 }
 
 

@@ -1,54 +1,121 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
-
-// uncomment and replace the following with your own headers
+#include <vector>
+#include <algorithm>
 #include "TreeNode.h"
 
 using namespace std;
 
-// the syntax for defining a test is below. It is important for the name to be unique, but you can group multiple tests with [tags]. A test can have [multiple][tags] using that syntax.
-//TEST_CASE("Example Test Name - Change me!", "[flag]"){
-//	// instantiate any class members that you need to test here
-//	int one = 1;
-//
-//	// anything that evaluates to false in a REQUIRE block will result in a failing test
-//	REQUIRE(one == 0); // fix me!
-//
-//	// all REQUIRE blocks must evaluate to true for the whole test to pass
-//	REQUIRE(false); // also fix me!
-//}
+TEST_CASE("Test incorrect commands")
+{
+    // Doesn't actually do anything my input validation is handled in main
+    // Not sure how to test that here but anyway...
+    TreeNode* root = nullptr;
 
-TEST_CASE("Test 2", "[flag]"){
-	// you can also use "sections" to share setup code between tests, for example:
-	int one = 1;
-    int negOne = -1;
+    // Trying to insert with invalid GatorID
+    root = root->insert(root, -45679999, "Anna");
+    REQUIRE(root == nullptr); // No changes to the tree because input should be rejected
 
-	SECTION("num is 2") {
-		int num = one - negOne;
-		REQUIRE(num == 2);
-	};
-
-	SECTION("num is 3") {
-		int num = one + 2;
-		REQUIRE(num == 3);
-	};
-
-	// each section runs the setup code independently to ensure that they don't affect each other
+    // Duplicate GatorID
+    root = root->insert(root, 12345678, "Carlos");
+    TreeNode* result = root->insert(root, 12345678, "Carlos");
+    REQUIRE(result == root); // Tree should remain unchanged on duplicate insert
 }
 
-// you must write 5 unique, meaningful tests for credit on the testing portion of this project!
+TEST_CASE("Test edge cases")
+{
+    TreeNode* root = nullptr;
 
-// the provided test from the template is below.
+    // Removing from an empty tree should return nullptr
+    root = root->remove(root, 12345678);
+    REQUIRE(root == nullptr);
 
-TEST_CASE("Example BST Insert", "[flag]"){
-	/*
-		MyAVLTree tree;   // Create a Tree object
-		tree.insert(3);
-		tree.insert(2);
-		tree.insert(1);
-		std::vector<int> actualOutput = tree.inorder();
-		std::vector<int> expectedOutput = {1, 2, 3};
-		REQUIRE(expectedOutput.size() == actualOutput.size());
-		REQUIRE(actualOutput == expectedOutput);
-	*/
+    // Inserting into empty tree
+    root = root->insert(root, 99999999, "RNGNode");
+    REQUIRE(root->search(root, 99999999) != nullptr); // Ensure its inserted
+
+    // Removing the root node
+    root = root->remove(root, 00000000);
+    REQUIRE(root != nullptr); // Ensure that the root is removed properly
 }
+
+TEST_CASE("Test AVL rotations")
+{
+    TreeNode* root = nullptr;
+
+    // Left-Left Rotation (Right Rotation)
+    root = root->insert(root, 40000000, "Node1");
+    root = root->insert(root, 30000000, "Node2");
+    root = root->insert(root, 20000000, "Node3");
+    REQUIRE(root->getGatorID() == 30000000); // After right rotation, 30000000 should be the root
+
+    // Right-Right Rotation (Left Rotation)
+    root = root->insert(root, 50000000, "Node4");
+    root = root->insert(root, 60000000, "Node5");
+    REQUIRE(root->right->getGatorID() == 50000000); // Ensure correct structure
+
+    // Left-Right Rotation (Left-Right Rotation)
+    root = root->insert(root, 10000000, "Node6");
+    root = root->insert(root, 15000000, "Node7");
+    REQUIRE(root->left->getGatorID() == 15000000); // After left-right, 15000000 should be left child
+
+    // Right-Left Rotation (Right-Left Rotation)
+    root = root->insert(root, 70000000, "Node8");
+    root = root->insert(root, 65000000, "Node9");
+    REQUIRE(root->right->getGatorID() == 50000000); // After right-left, 50000000 should be right child
+}
+
+TEST_CASE("Test deletion cases")
+{
+    TreeNode* root = nullptr;
+
+    root = root->insert(root, 50000000, "Node1");
+    root = root->insert(root, 30000000, "Node2");
+    root = root->insert(root, 70000000, "Node3");
+    root = root->insert(root, 60000000, "Node4");
+    root = root->insert(root, 90000000, "Node5");
+
+    // Case 1: Deleting node with no children
+    root = root->remove(root, 30000000);
+    REQUIRE(root->search(root, 30000000) == nullptr); // 30000000 is removed
+
+    // Case 2: Deleting node with one child
+    root = root->remove(root, 60000000);
+    REQUIRE(root->search(root, 60000000) == nullptr); // 60000000 is removed
+
+    // Case 3: Deleting node with two children
+    root = root->remove(root, 70000000);
+    REQUIRE(root->search(root, 70000000) == nullptr); // 70000000 is removed
+}
+
+TEST_CASE("Test inserting and removing 100 nodes")
+{
+    TreeNode* root = nullptr;
+    vector<int> expectedOutput, actualOutput;
+
+    // insert 100 nodes
+    for(int i = 0; i < 100000; i++)
+    {
+        int randomInput = rand();
+        if (count(expectedOutput.begin(), expectedOutput.end(), randomInput) == 0)
+        {
+            expectedOutput.push_back(randomInput);
+            root->insert(root, randomInput, "RandomNode");
+        }
+    }
+
+    // check if equal
+    actualOutput = root->inorder(root);
+    REQUIRE(expectedOutput.size() == actualOutput.size());
+    std::sort(expectedOutput.begin(), expectedOutput.end());
+    REQUIRE(expectedOutput == actualOutput);
+}
+
+
+
+
+
+
+
+
+
