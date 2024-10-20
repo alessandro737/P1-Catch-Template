@@ -34,7 +34,7 @@ public:
     TreeNode* removeInorder(TreeNode* root, int N);
 
     // helpers
-    TreeNode* findMin(TreeNode* node);
+TreeNode* findMin(TreeNode* node);
     TreeNode* leftRotate(TreeNode* root);
     TreeNode* rightRotate(TreeNode* root);
     TreeNode* findNthInOrder(TreeNode* node, int& currCount, int N);

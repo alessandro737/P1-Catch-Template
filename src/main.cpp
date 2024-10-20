@@ -27,26 +27,18 @@
 using namespace std;
 
 int main() {
-    vector<string> commandLines;
-    ifstream inputFile("../test-io/input-files/4.txt");
+    int numCommands = 0;
 
-    if(inputFile.is_open())
-    {
-        int numCommands = 0;
-        inputFile >> numCommands;
-        inputFile.ignore();
-        commandLines.resize(numCommands);
-        for(int i = 0; i < numCommands; i++)
-        {
-            getline(inputFile, commandLines[i]);
-        }
-        inputFile.close();
-    }
-    else
-    {
-        cerr << "Couldn't open input file." << endl;
-        inputFile.close();
-        return -1;
+    //get num commands
+    string line;
+    getline(cin, line);
+    numCommands = stoi(line);
+
+    vector<string> commandLines(numCommands);
+
+    // get each command
+    for(int i = 0; i < numCommands; i++) {
+        getline(cin, commandLines[i]);
     }
 
     regex insertRegex("^insert\\s+\"([a-zA-Z\\s]+)\"\\s+(\\d{8})$");
@@ -150,7 +142,7 @@ int main() {
         }
         else
         {
-            cerr << "unsuccessful" << endl;
+            cout << "unsuccessful" << endl;
         }
     }
 
