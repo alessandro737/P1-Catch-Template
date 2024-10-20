@@ -60,18 +60,30 @@ int main() {
     TreeNode* root = nullptr;
     for(const string& command : commandLines)
     {
-        if (regex_match(command, matches, insertRegex)) {
+        if (regex_match(command, matches, insertRegex))
+        {
             string name = matches[1].str();
             int id = stoi(matches[2].str());
             // cout << "Inserting: " << name << ", ID: " << id << endl;
             root = root->insert(root, id, name);
         }
-        else if (regex_match(command, matches, removeRegex)) {
+        else if (regex_match(command, matches, removeRegex))
+        {
             string id = matches[1].str();
             // cout << "Removing ID: " << id << endl;
-            root = root->remove(root, stoi(id));
+            TreeNode* result = root->remove(root, stoi(id));
+            if(result == nullptr)
+            {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                cout << "successful" << endl;
+                root = result;
+            }
         }
-        else if (regex_match(command, matches, searchIdRegex)) {
+        else if (regex_match(command, matches, searchIdRegex))
+        {
             string id = matches[1].str();
             // cout << "Searching by ID: " << id << endl;
             if(root == nullptr) {
@@ -86,7 +98,8 @@ int main() {
                 }
             }
         }
-        else if (regex_match(command, matches, searchNameRegex)) {
+        else if (regex_match(command, matches, searchNameRegex))
+        {
             string name = matches[1].str();
             // cout << "Searching by Name: " << name << endl;
             if(root == nullptr) {
@@ -102,12 +115,23 @@ int main() {
                 }
             }
         }
-        else if (regex_match(command, matches, removeInorderRegex)) {
+        else if (regex_match(command, matches, removeInorderRegex))
+        {
             int n = stoi(matches[1].str());
             // cout << "Removing Inorder N: " << n << endl;
-            root = root->removeInorder(root, n);
+            TreeNode* result = root->removeInorder(root, n);
+            if(result == nullptr)
+            {
+                cout << "unsuccessful" << endl;
+            }
+            else
+            {
+                cout << "successful" << endl;
+                root = result;
+            }
         }
-        else if (regex_match(command, matches, simpleCommandRegex)) {
+        else if (regex_match(command, matches, simpleCommandRegex))
+        {
             string commandType = matches[1].str();
             bool firstPrinted = false;
             // cout << "Executing " << commandType << " traversal" << endl;
@@ -124,7 +148,8 @@ int main() {
                 root->printLevelCount(root);
             }
         }
-        else {
+        else
+        {
             cerr << "unsuccessful" << endl;
         }
     }

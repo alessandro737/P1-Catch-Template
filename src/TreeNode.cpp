@@ -3,28 +3,19 @@
 //
 
 #include "TreeNode.h"
-
 #include <iostream>
 #include <ostream>
-
-int TreeNode::getGatorID() const
-{
-    return gatorID;
-}
-
-string TreeNode::getName()
-{
-    return name;
-}
+#include <vector>
 
 TreeNode::~TreeNode()
 {
-    if(left)
+    if (left)
     {
         delete left;
         left = nullptr;
     }
-    if(right)
+
+    if (right)
     {
         delete right;
         right = nullptr;
@@ -48,8 +39,10 @@ TreeNode *TreeNode::search(TreeNode *root, int key)
     {
         return search(root->left, key);
     }
-
-    return search(root->right, key);
+    else
+    {
+        return search(root->right, key);
+    }
 }
 
 TreeNode *TreeNode::search(TreeNode *root, const string& key, bool& found)
@@ -93,17 +86,17 @@ TreeNode* TreeNode::insert(TreeNode *root, int key, const string& val)
         return root;
     }
 
-    root->height = 1 + max(root->left == nullptr ? 0 : root->left->height,
-                           root->right == nullptr ? 0 : root->right->height);
+    root->height = 1 + max(root->left == nullptr ? -1 : root->left->height,
+                           root->right == nullptr ? -1 : root->right->height);
 
-    int balanceFactor = (root->left ? root->left->height : 0) -
-                        (root->right ? root->right->height : 0);
+    int balanceFactor = ((root->left == nullptr ? -1 : root->left->height) -
+                        (root->right == nullptr ? -1 : root->right->height));
 
     if (balanceFactor < -1)
     { // right heavy?
         // Check if right subtree is left heavy
-        int rightChildBalance = (root->right->left ? root->right->left->height : 0) -
-                                (root->right->right ? root->right->right->height : 0);
+        int rightChildBalance = (root->right->left ? root->right->left->height : -1) -
+                                (root->right->right ? root->right->right->height : -1);
 
         if (rightChildBalance > 0)
         {
@@ -121,8 +114,8 @@ TreeNode* TreeNode::insert(TreeNode *root, int key, const string& val)
     else if (balanceFactor > 1)
     {
         // Check if left subtree is right heavy
-        int leftChildBalance = (root->left->left ? root->left->left->height : 0) -
-                               (root->left->right ? root->left->right->height : 0);
+        int leftChildBalance = (root->left->left ? root->left->left->height : -1) -
+                               (root->left->right ? root->left->right->height : -1);
 
         if (leftChildBalance < 0)
         {
@@ -158,33 +151,45 @@ TreeNode* TreeNode::remove(TreeNode* root, int key)
     }
     else
     { // The item is in the local root
-        if (root->left == nullptr && root->right == nullptr)
-        { // no children
-            delete root;
-            return nullptr;
-        }
-        else if (root->left == nullptr)
-        { // one child on right
-            TreeNode *temp = root->right;
-            delete root;
-            return temp;
-        }
-        else if (root->right == nullptr)
-        { // one child on left
-            TreeNode *temp = root->left;
-            delete root;
-            return temp;
+        if (root->left == nullptr || root->right == nullptr)
+        { // one or no children
+            TreeNode* temp = root->left ? root->left : root->right;
+
+            // No children case
+            if (temp == nullptr)
+            {
+                temp = root;
+                root = nullptr;
+            }
+            else
+            {
+                *root = *temp; // Copy the content of the non-null child
+            }
+
+            delete temp;
+
         }
         else
         { //two children find inorder successor
             TreeNode *temp = findMin(root->right);
+
             root->gatorID = temp->gatorID;
             root->name = temp->name;
+
             root->right = remove(root->right, temp->gatorID);
         }
     }
 
-    cout << "successful" << endl;
+    // If the tree had only one node then return
+    if (root == nullptr)
+    {
+        return root;
+    }
+
+    // Update the height of the current node
+    root->height = 1 + max(root->left == nullptr ? -1 : root->left->height,
+                           root->right == nullptr ? -1 : root->right->height);
+
     return root;
 }
 
@@ -195,24 +200,15 @@ void TreeNode::printInorder(const TreeNode *root, bool& firstPrinted)
         return;
     }
 
-    if (root->left != nullptr)
-    {
-        printInorder(root->left, firstPrinted);
-    }
-
+    printInorder(root->left, firstPrinted);
     if (firstPrinted)
     {
         cout << ", ";
     }
     cout << root->name;
     firstPrinted = true;
+    printInorder(root->right, firstPrinted);
 
-    if(root->right != nullptr)
-    {
-        printInorder(root->right, firstPrinted);
-    }
-
-    return;
 }
 
 void TreeNode::printPreorder(const TreeNode *root, bool& firstPrinted)
@@ -228,18 +224,9 @@ void TreeNode::printPreorder(const TreeNode *root, bool& firstPrinted)
     }
     cout << root->name;
     firstPrinted = true;
+    printPreorder(root->left, firstPrinted);
+    printPreorder(root->right, firstPrinted);
 
-    if(root->left != nullptr)
-    {
-        printPreorder(root->left, firstPrinted);
-    }
-
-    if(root->right != nullptr)
-    {
-        printPreorder(root->right, firstPrinted);
-    }
-
-    return;
 }
 
 void TreeNode::printPostorder(const TreeNode *root, bool& firstPrinted)
@@ -267,38 +254,40 @@ void TreeNode::printLevelCount(const TreeNode *root)
     }
     else
     {
-        cout << root->height << endl;
+        cout << (root->height + 1) << endl;
     }
 }
 
 TreeNode * TreeNode::removeInorder(TreeNode *root, const int N)
 {
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         cout << "unsuccessful" << endl;
         return nullptr;
     }
 
     int count = 0;
-    TreeNode *target = findNthInOrder(root, count, N);
-    root = remove(root, target->gatorID);
+    TreeNode* target = findNthInOrder(root, count, N);
 
+    if (target == nullptr)
+    {
+        cout << "unsuccessful" << endl;
+        return root;
+    }
+
+    if(target != nullptr) //safeguard -- you never know
+    {
+        root = remove(root, target->gatorID);
+    }
     return root;
 }
 
 TreeNode* TreeNode::findMin(TreeNode* node)
 {
     TreeNode* current = node;
-    while (current && current->left != nullptr) {
+    while (current && current->left != nullptr)
+    {
         current = current->left;
-    }
-    return current;
-}
-
-TreeNode * TreeNode::findMax(TreeNode *node)
-{
-    TreeNode* current = node;
-    while (current && current->right != nullptr) {
-        current = current->right;
     }
     return current;
 }
@@ -312,11 +301,11 @@ TreeNode *TreeNode::leftRotate(TreeNode *root)
     root->right = leftOfNew;
 
     //update heights
-    root->height = 1 + max((root->left ? root->left->height : 0),
-                           (root->right ? root->right->height : 0));
+    root->height = 1 + max((root->left ? root->left->height : -1),
+                           (root->right ? root->right->height : -1));
 
-    newRoot->height = 1 + max((newRoot->left ? newRoot->left->height : 0),
-                              (newRoot->right ? newRoot->right->height : 0));
+    newRoot->height = 1 + max((newRoot->left ? newRoot->left->height : -1),
+                              (newRoot->right ? newRoot->right->height : -1));
 
     return newRoot;
 }
@@ -330,11 +319,11 @@ TreeNode *TreeNode::rightRotate(TreeNode *root)
     root->left = rightOfNew;
 
     //update heights
-    root->height = 1 + max((root->left ? root->left->height : 0),
-                           (root->right ? root->right->height : 0));
+    root->height = 1 + max((root->left ? root->left->height : -1),
+                           (root->right ? root->right->height : -1));
 
-    newRoot->height = 1 + max((newRoot->left ? newRoot->left->height : 0),
-                              (newRoot->right ? newRoot->right->height : 0));
+    newRoot->height = 1 + max((newRoot->left ? newRoot->left->height : -1),
+                              (newRoot->right ? newRoot->right->height : -1));
 
     return newRoot;
 }
@@ -346,9 +335,10 @@ TreeNode * TreeNode::findNthInOrder(TreeNode *node, int &currCount, int N)
         return nullptr;
     }
 
-    if (node->left != nullptr)
+    TreeNode* targetLeft = findNthInOrder(node->left, currCount, N);
+    if (targetLeft != nullptr)
     {
-        return findNthInOrder(node->left, currCount, N);
+        return targetLeft; // If the node is found in the left subtree, return it immediately
     }
 
     if(currCount == N)
@@ -358,13 +348,40 @@ TreeNode * TreeNode::findNthInOrder(TreeNode *node, int &currCount, int N)
 
     currCount++;
 
-    if (node->right != nullptr)
+    TreeNode* targetRight = findNthInOrder(node->right, currCount, N);
+    if (targetRight != nullptr)
     {
-        return findNthInOrder(node->right, currCount, N);
+        return targetRight; // If the node is found in the right subtree, return it immediately
     }
+
+    return nullptr;
 }
 
+int TreeNode::getGatorID()
+{
+    return this->gatorID;
+}
 
+std::vector<int> TreeNode::inorder(TreeNode *root)
+{
+    std::vector<int> result;
+    if (root == nullptr)
+    {
+        return result;
+    }
+    // left
+    std::vector<int> leftSubtree = inorder(root->left);
+    result.insert(result.end(), leftSubtree.begin(), leftSubtree.end());
+
+    // root
+    result.push_back(root->gatorID);
+
+    // right
+    std::vector<int> rightSubtree = inorder(root->right);
+    result.insert(result.end(), rightSubtree.begin(), rightSubtree.end());
+
+    return result;
+}
 
 
 
